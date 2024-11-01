@@ -5,7 +5,7 @@ CFLAGS=-O2 -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -Werror
 	-Wl,-z,nodlopen -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now
 VG=valgrind
 VFLAGS=--leak-check=full --show-leak-kinds=all --track-origins=yes
-OBJECTS=$(patsubst %.c,%.o,$(wildcard *.c))
+OBJECTS=screenlayout.o translate.o
 INSTALLDIR=$(HOME)/.local/bin
 
 all: $(OBJECTS)
@@ -13,7 +13,7 @@ all: $(OBJECTS)
 compile: $(OBJECTS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) config.c $< -o $@
 
 test: compile
 	@$(foreach obj,$(OBJECTS),$(VG) $(VFLAGS) ./$(obj);)
@@ -22,7 +22,7 @@ clean:
 	-rm -f *.o
 
 install: compile
-	@$(foreach obj,$(OBJECTS),cp $(obj) $(INSTALLDIR)/rofi-$(subst .o,,$(obj));)
+	@$(foreach obj,$(OBJECTS),mv $(obj) $(INSTALLDIR)/rofi-$(subst .o,,$(obj));)
 
 uninstall:
 	@$(foreach obj,$(OBJECTS),rm -f $(INSTALLDIR)/$(obj);)
