@@ -7,7 +7,6 @@
 
 void list_screenlayout_scripts(const char* path)
 {
-    struct dirent* file;
     DIR* dir = opendir(path);
     if (dir == NULL) {
         printf("Error while opening directory: %s\n", path);
@@ -17,11 +16,16 @@ void list_screenlayout_scripts(const char* path)
     if (regcomp(&regex, ".sh$", 0)) {
         return;
     }
+    struct dirent* file;
     while ((file = readdir(dir)) != NULL) {
         if (file->d_type == DT_DIR) {
             continue;
         }
         if (regexec(&regex, file->d_name, 0, NULL, 0) == 0) {
+            char* ext = strrchr(file->d_name, '.');
+            if (ext != NULL) {
+                *ext = '\0';
+            }
             printf("%s\n", file->d_name);
         }
     }
